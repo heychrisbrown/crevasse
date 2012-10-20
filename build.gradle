@@ -1,5 +1,16 @@
+buildscript {
+    repositories {
+        mavenRepo urls: 'http://repo.smokejumperit.com'
+    }
+    dependencies {
+        classpath 'com.smokejumperit:gradle-plugins:0.8.2'
+    }
+}
+
 apply plugin: 'groovy'
 apply plugin: 'application'
+apply plugin: com.smokejumperit.gradle.OneJarPlugin
+
 mainClassName = "AmazonGlacierClient"
 
 repositories {
@@ -7,6 +18,12 @@ repositories {
 }
 
 dependencies {
-      compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.3.22'
-      groovy 'org.codehaus.groovy:groovy-all:2.0.0'
+    compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.3.22'
+    groovy 'org.codehaus.groovy:groovy-all:2.0.0'
+}
+
+jar {
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
 }
