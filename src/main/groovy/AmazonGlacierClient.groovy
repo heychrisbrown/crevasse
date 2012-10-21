@@ -4,13 +4,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
-import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
+import com.amazonaws.services.glacier.transfer.ArchiveTransferManager
 import com.amazonaws.services.glacier.transfer.UploadResult
-import java.util.logging.Logger
-import java.util.logging.Level;
+import org.slf4j.*
 
-final Log log = LogFactory.getLog("AmazonGlacierClient");
 final dryrun = true
+ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("AGC");
+logger.setLevel(ch.qos.logback.classic.Level.INFO);
+logger.debug("debug")
+logger.info("info")
 
 AWSCredentials credentials = new PropertiesCredentials(
         AmazonGlacierClient.class.getResourceAsStream("AwsCredentials.properties"))
@@ -25,7 +27,7 @@ if (!(dir.isDirectory())) {
 }
 
 dir.traverse { archiveToUpload ->
-    log.debug("Processing ${archiveToUpload}")
+    logger.debug("Processing ${archiveToUpload}")
     final description = "my archive " + (new Date())
     if (!dryrun) {
         UploadResult result = atm.upload(vaultName, description, new File(archiveToUpload))
