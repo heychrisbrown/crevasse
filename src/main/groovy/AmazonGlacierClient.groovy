@@ -1,5 +1,6 @@
 final vaultName = "family_media";
 final endpoint = "https://glacier.us-east-1.amazonaws.com/"
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.amazonaws.auth.AWSCredentials;
@@ -7,12 +8,20 @@ import com.amazonaws.auth.PropertiesCredentials;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager
 import com.amazonaws.services.glacier.transfer.UploadResult
 import org.slf4j.*
+import org.apache.commons.cli.ParseException
 
 final dryrun = true
 ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("AGC");
-logger.setLevel(ch.qos.logback.classic.Level.INFO);
-logger.debug("debug")
-logger.info("info")
+
+def cli = new CliBuilder(usage: 'crevasse [options] [targets]', header: 'Options:')
+cli.help('print this message')
+cli.d('debug')
+def options = cli.parse(args)
+if (options.d) {
+    logger.setLevel(ch.qos.logback.classic.Level.DEBUG);
+} else {
+    logger.setLevel(ch.qos.logback.classic.Level.INFO);
+}
 
 AWSCredentials credentials = new PropertiesCredentials(
         AmazonGlacierClient.class.getResourceAsStream("AwsCredentials.properties"))

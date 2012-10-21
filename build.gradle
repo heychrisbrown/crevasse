@@ -23,10 +23,15 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.0.7'
     compile 'ch.qos.logback:logback-core:1.0.7'
     compile 'org.slf4j:slf4j-api:1.6.6'
+    compile 'commons-cli:commons-cli:1.0'
 }
 
 jar {
     manifest {
         attributes("Main-Class": mainClassName)
     }
+}
+
+run {
+    args '-d'
 }
