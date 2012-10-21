@@ -1,3 +1,4 @@
+final projectName = 'crevasse'
 final vaultName = "family_media";
 final endpoint = "https://glacier.us-east-1.amazonaws.com/"
 
@@ -13,15 +14,18 @@ import org.apache.commons.cli.ParseException
 final dryrun = true
 ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("AGC");
 
-def cli = new CliBuilder(usage: 'crevasse [options] [targets]', header: 'Options:')
-cli.help('print this message')
-cli.d('debug')
-def options = cli.parse(args)
-if (options.d) {
-    logger.setLevel(ch.qos.logback.classic.Level.DEBUG);
-} else {
-    logger.setLevel(ch.qos.logback.classic.Level.INFO);
+def cli = new CliBuilder(
+        usage: "${projectName} [options] --from [path] --to [vault]",
+        header: 'Options (or ask for --help):')
+cli.with {
+    h(longOpt: 'help', "this help")
+    d(longOpt: 'debug', "enable debug logging")
+    from(longOpt: 'from', "the path to copy from")
+    to(longOpt: 'to', "the already-existing vault to copy to")
 }
+def options = cli.parse(args)
+logger.setLevel(options.d ? ch.qos.logback.classic.Level.DEBUG : ch.qos.logback.classic.Level.INFO)
+if (options.h) cli.usage()
 
 AWSCredentials credentials = new PropertiesCredentials(
         AmazonGlacierClient.class.getResourceAsStream("AwsCredentials.properties"))

@@ -33,5 +33,5 @@ jar {
 }
 
 run {
-    args '-d'
+    args '--help'
 }
