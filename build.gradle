@@ -33,5 +33,7 @@ jar {
 }
 
 run {
-    args '--help'
+    args '-d'
+    args '--from=/Users/cbrown/Pictures'
+    args '--to=family_media'
 }
