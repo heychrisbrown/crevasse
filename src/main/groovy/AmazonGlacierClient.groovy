@@ -38,19 +38,19 @@ AWSCredentials credentials = new PropertiesCredentials(
 client = new com.amazonaws.services.glacier.AmazonGlacierClient(credentials)
 client.setEndpoint(endpoint)
 ArchiveTransferManager atm = new ArchiveTransferManager(client, credentials)
-logger.info("copying ${options.from} to ${credentials.AWSAccessKeyId}.${options.to}")
+logger.info("copying from directory=${options.from} to vault=${credentials.AWSAccessKeyId}.${options.to}")
 
 dir = new File(options.from)
 if (!(dir.isDirectory())) {
-    logger.fatal "${dir.canonicalPath} is not a directory."
+    logger.fatal "not a directory, directory=${dir.canonicalPath}"
     System.exit(1)
 }
 
 dir.traverse { archiveToUpload ->
     logger.debug("Processing ${archiveToUpload}")
-    final description = "my archive " + (new Date())
+    final description = archiveToUpload
     if (!dryrun) {
-        UploadResult result = atm.upload(options.to, description, new File(archiveToUpload))
-        print "Archive ID: ${result.getArchiveId()}"
+        UploadResult result = atm.upload(options.to, description, archiveToUpload)
+        logger.info("Uploaded from path=${archiveToUpload} to archive=${result.getArchiveId()} in vault=${options.to}")
     }
 }
