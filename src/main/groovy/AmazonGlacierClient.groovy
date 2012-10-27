@@ -58,5 +58,7 @@ dir.traverse { fileToUpload ->
 }
 
 def canUpload(file) {
-    return file.length() > 0
+    if (file.length() == 0) return false
+    if (file.isDirectory()) return false
+    true
 }
