@@ -8,7 +8,6 @@ import com.amazonaws.services.glacier.transfer.UploadResult
 import org.slf4j.*
 import org.apache.commons.cli.ParseException
 
-final dryrun = true
 ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("AGC")
 
 def cli = new CliBuilder(
@@ -19,6 +18,7 @@ cli.with {
     d(longOpt: 'debug', "enable debug logging")
     from(longOpt: 'from', args:1, argName:'path', 'the path to copy from')
     to(longOpt: 'to', args:1, argName:'vault', "the already-existing vault to copy to")
+    dryrun(longOpt: 'dryrun', "don't actually upload")
 }
 def options = cli.parse(args)
 logger.setLevel(options.d ? ch.qos.logback.classic.Level.DEBUG : ch.qos.logback.classic.Level.INFO)
@@ -49,8 +49,8 @@ if (!(dir.isDirectory())) {
 dir.traverse { archiveToUpload ->
     logger.debug("Processing ${archiveToUpload}")
     final description = archiveToUpload
-    if (!dryrun) {
-        UploadResult result = atm.upload(options.to, description, archiveToUpload)
+    if (!options.dryrun) {
+        UploadResult result = atm.upload(options.to, description.name, archiveToUpload)
         logger.info("Uploaded from path=${archiveToUpload} to archive=${result.getArchiveId()} in vault=${options.to}")
     }
 }

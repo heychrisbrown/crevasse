@@ -36,4 +36,5 @@ run {
     args '-d'
     args '--from=/Users/cbrown/Pictures'
     args '--to=family_media'
+    args '--dryrun'
 }
