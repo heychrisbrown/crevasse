@@ -46,11 +46,17 @@ if (!(dir.isDirectory())) {
     System.exit(1)
 }
 
-dir.traverse { archiveToUpload ->
-    logger.debug("Processing ${archiveToUpload}")
-    final description = archiveToUpload
+dir.traverse { fileToUpload ->
+    logger.debug("Processing ${fileToUpload}")
+    final description = fileToUpload
     if (!options.dryrun) {
-        UploadResult result = atm.upload(options.to, description.name, archiveToUpload)
-        logger.info("Uploaded from path=${archiveToUpload} to archive=${result.getArchiveId()} in vault=${options.to}")
+        if (canUpload(fileToUpload)) {
+            UploadResult result = atm.upload(options.to, description.name, fileToUpload)
+            logger.info("Uploaded from path=${fileToUpload} to archive=${result.getArchiveId()} in vault=${options.to}")
+        }
     }
+}
+
+def canUpload(file) {
+    return file.length() > 0
 }
