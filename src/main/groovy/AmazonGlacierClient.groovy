@@ -16,9 +16,10 @@ def cli = new CliBuilder(
 cli.with {
     h(longOpt: 'help', "this help")
     d(longOpt: 'debug', "enable debug logging")
-    from(longOpt: 'from', args:1, argName:'path', 'the path to copy from')
-    to(longOpt: 'to', args:1, argName:'vault', "the already-existing vault to copy to")
+    from(longOpt: 'from', args:1, argName:'path', 'the path to copy from', required:true)
+    to(longOpt: 'to', args:1, argName:'vault', "the already-existing vault to copy to", required:true)
     dryrun(longOpt: 'dryrun', "don't actually upload")
+    credentials(longOpt: 'credentials', args:1, argName:'credentials', "file containing AWS credentials", required:true)
 }
 def options = cli.parse(args)
 logger.setLevel(options.d ? ch.qos.logback.classic.Level.DEBUG : ch.qos.logback.classic.Level.INFO)
@@ -32,9 +33,7 @@ if (!(options.from && options.to)) {
     System.exit(1)
 }
 
-
-AWSCredentials credentials = new PropertiesCredentials(
-        AmazonGlacierClient.class.getResourceAsStream("AwsCredentials.properties"))
+AWSCredentials credentials = new PropertiesCredentials(new File(options.credentials))
 client = new com.amazonaws.services.glacier.AmazonGlacierClient(credentials)
 client.setEndpoint(endpoint)
 ArchiveTransferManager atm = new ArchiveTransferManager(client, credentials)
