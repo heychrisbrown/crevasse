@@ -37,6 +37,7 @@ run {
     args '--from=/Users/cbrown/Pictures'
     args '--to=family_media'
     args '--credentials=/Users/cbrown/dev/glacier-backup/src/main/resources/AwsCredentials.properties'
+    args '--inventoryFile=/tmp/glacier.txt'
     args '--dryrun'
     jvmArgs=["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"]
 }

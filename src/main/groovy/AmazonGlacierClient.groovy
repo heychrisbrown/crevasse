@@ -20,24 +20,29 @@ cli.with {
     to(longOpt: 'to', args:1, argName:'vault', "the already-existing vault to copy to", required:true)
     dryrun(longOpt: 'dryrun', "don't actually upload")
     credentials(longOpt: 'credentials', args:1, argName:'credentials', "file containing AWS credentials", required:true)
+    inventoryFile(longOpt: 'inventoryFile', args:1, argName:'inventoryFile', "file to write, mapping from local file to archive name", required:true)
 }
 def options = cli.parse(args)
-logger.setLevel(options.d ? ch.qos.logback.classic.Level.DEBUG : ch.qos.logback.classic.Level.INFO)
+if (!options) System.exit(0)
+
 if (options.h) {
     cli.usage()
     System.exit(0)
 }
 
-if (!(options.from && options.to)) {
-    cli.usage()
-    System.exit(1)
-}
+logger.setLevel(options.d ? ch.qos.logback.classic.Level.DEBUG : ch.qos.logback.classic.Level.INFO)
 
 AWSCredentials credentials = new PropertiesCredentials(new File(options.credentials))
 client = new com.amazonaws.services.glacier.AmazonGlacierClient(credentials)
 client.setEndpoint(endpoint)
 ArchiveTransferManager atm = new ArchiveTransferManager(client, credentials)
 logger.info("copying from directory=${options.from} to vault=${credentials.AWSAccessKeyId}.${options.to}")
+
+def inventoryFile
+if (options.inventoryFile) {
+    inventoryFile = new File(options.inventoryFile)
+    inventoryFile.createNewFile()
+}
 
 dir = new File(options.from)
 if (!(dir.isDirectory())) {
@@ -52,6 +57,7 @@ dir.traverse { fileToUpload ->
         if (canUpload(fileToUpload)) {
             UploadResult result = atm.upload(options.to, description.name, fileToUpload)
             logger.info("Uploaded from path=${fileToUpload} to archive=${result.getArchiveId()} in vault=${options.to}")
+            inventoryFile?.append([fileToUpload, options.to, result.getArchiveId()].join("\t") + "\n")
         }
     }
 }
