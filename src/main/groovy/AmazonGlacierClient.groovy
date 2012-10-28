@@ -11,7 +11,7 @@ import org.apache.commons.cli.ParseException
 ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("AGC")
 
 def cli = new CliBuilder(
-        usage: "${projectName} [options] --from [path] --to [vault]",
+        usage: "${projectName} [options] --from [path] --to [vault] --credentials [file with your AWS credentials]",
         header: 'Options:')
 cli.with {
     h(longOpt: 'help', "this help")
@@ -20,7 +20,7 @@ cli.with {
     to(longOpt: 'to', args:1, argName:'vault', "the already-existing vault to copy to", required:true)
     dryrun(longOpt: 'dryrun', "don't actually upload")
     credentials(longOpt: 'credentials', args:1, argName:'credentials', "file containing AWS credentials", required:true)
-    inventoryFile(longOpt: 'inventoryFile', args:1, argName:'inventoryFile', "file to write, mapping from local file to archive name", required:true)
+    inventoryFile(longOpt: 'inventoryFile', args:1, argName:'inventoryFile', "file to write, mapping from local file to archive name")
 }
 def options = cli.parse(args)
 if (!options) System.exit(0)
