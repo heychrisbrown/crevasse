@@ -8,7 +8,7 @@ import com.amazonaws.services.glacier.transfer.UploadResult
 import org.slf4j.*
 import org.apache.commons.cli.ParseException
 
-ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("AGC")
+ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(projectName)
 
 def cli = new CliBuilder(
         usage: "${projectName} [options] --from [path] --to [vault] --credentials [file with your AWS credentials]",
