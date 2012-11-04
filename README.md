@@ -8,7 +8,7 @@ Requirements
 
 * A Java runtime; 1.6 is known to work
 * An Amazon Web Services account with a Glacier vault already created.
-* A properties file containing your AWS credentials, aping from [sample-aws-credentials.properties](crevasse/src/main/resources/sample-aws-credentials.properties) if you'd like.
+* A properties file containing your AWS credentials, aping from [sample-aws-credentials.properties](crevasse/blob/master/src/main/resources/sample-aws-credentials.properties) if you'd like.
 
 Running
 -
