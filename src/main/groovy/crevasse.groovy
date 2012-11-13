@@ -58,6 +58,7 @@ dir.traverse { fileToUpload ->
             UploadResult result = atm.upload(options.to, description.name, fileToUpload)
             logger.info("Uploaded from path=${fileToUpload} to archive=${result.getArchiveId()} in vault=${options.to}")
             inventoryFile?.append([fileToUpload, options.to, result.getArchiveId()].join("\t") + "\n")
+            fileToUpload.delete()
         }
     }
 }
