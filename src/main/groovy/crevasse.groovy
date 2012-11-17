@@ -7,6 +7,8 @@ import com.amazonaws.services.glacier.transfer.ArchiveTransferManager
 import com.amazonaws.services.glacier.transfer.UploadResult
 import org.slf4j.*
 import org.apache.commons.cli.ParseException
+import com.amazonaws.AmazonServiceException
+
 
 ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(projectName)
 
@@ -55,7 +57,15 @@ dir.traverse { fileToUpload ->
     final description = fileToUpload
     if (!options.dryrun) {
         if (canUpload(fileToUpload)) {
-            UploadResult result = atm.upload(options.to, description.name, fileToUpload)
+            try {
+                UploadResult result = atm.upload(options.to, description.name, fileToUpload)
+            } catch (AmazonServiceException ase) {
+                if (ase.getStatusCode() == 408) {  // angry ISP?
+                    logger.info("Sleeping, will retry")
+                    sleep(1000 * 60 * 5);
+                    UploadResult result = atm.upload(options.to, description.name, fileToUpload)
+                }
+            }
             logger.info("Uploaded from path=${fileToUpload} to archive=${result.getArchiveId()} in vault=${options.to}")
             inventoryFile?.append([fileToUpload, options.to, result.getArchiveId()].join("\t") + "\n")
             fileToUpload.delete()
