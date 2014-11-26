@@ -11,8 +11,6 @@ apply plugin: 'groovy'
 apply plugin: 'application'
 apply plugin: com.smokejumperit.gradle.OneJarPlugin
 
-mainClassName = "crevasse"
-
 repositories {
     mavenCentral()
 }
@@ -26,21 +24,38 @@ dependencies {
     compile 'commons-cli:commons-cli:1.0'
 }
 
-jar {
-    manifest {
-        attributes("Main-Class": mainClassName)
-    }
-}
-
 /*
  For runs from IntelliJ
  */
-run {
-    args '-d'
-    args '--from=/Users/cbrown/Pictures'
-    args '--to=family_media'
-    args '--credentials=/Users/cbrown/dev/crevasse/AwsCredentials.properties'
-    args '--inventoryFile=/tmp/crevasse-inventory.txt'
-    args '--dryrun'
-    jvmArgs=["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"]
+if (1 == 2) { // TODO it right
+    mainClassName = "crevasse"
+    jar {
+        manifest {
+            attributes("Main-Class": mainClassName)
+        }
+    }
+    run {
+        args '-d'
+        args '--from=/Users/cbrown/Pictures'
+        args '--to=family_media'
+        args '--credentials=/Users/cbrown/dev/crevasse/AwsCredentials.properties'
+        args '--inventoryFile=/tmp/crevasse-inventory.txt'
+        args '--dryrun'
+        jvmArgs=["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"]
+    }
+} else {
+    mainClassName = "deleter"
+    jar {
+        manifest {
+            attributes("Main-Class": mainClassName)
+        }
+    }
+    run {
+        args '-d'
+        args '--credentials=/Users/cbrown/dev/crevasse/AwsCredentials.properties'
+        args '--vault=???'
+        args '--dryrun'
+        jvmArgs=["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"]
+    }
 }
+

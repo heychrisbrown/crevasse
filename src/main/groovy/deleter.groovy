@@ -1,4 +1,4 @@
-final projectName = 'crevasse'
+final projectName = 'deleter'
 final endpoint = "https://glacier.us-east-1.amazonaws.com/"
 
 import com.amazonaws.auth.AWSCredentials
@@ -39,21 +39,15 @@ client.setEndpoint(endpoint)
 ArchiveTransferManager atm = new ArchiveTransferManager(client, credentials)
 logger.info("deleting from vault=${credentials.AWSAccessKeyId}.${options.vault}")
 
-
-dir.traverse { fileToUpload ->
-    logger.debug("Processing ${fileToUpload}")
-    final description = fileToUpload
-    if (!options.dryrun) {
-        try {
-
+if (!options.dryrun) {
+    try {
+        UploadResult result = atm.upload(options.to, description.name, fileToUpload)
+    } catch (AmazonServiceException ase) {
+        if (ase.getStatusCode() == 408) {  // angry ISP?
+            logger.info("Sleeping, will retry")
+            sleep(1000 * 60 * 5);
             UploadResult result = atm.upload(options.to, description.name, fileToUpload)
-        } catch (AmazonServiceException ase) {
-            if (ase.getStatusCode() == 408) {  // angry ISP?
-                logger.info("Sleeping, will retry")
-                sleep(1000 * 60 * 5);
-                UploadResult result = atm.upload(options.to, description.name, fileToUpload)
-            }
         }
-        logger.info("Deleted archive=${result.getArchiveId()} in vault=${options.vault}")
     }
+    logger.info("Deleted archive=${result.getArchiveId()} in vault=${options.vault}")
 }
