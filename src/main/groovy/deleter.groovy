@@ -5,6 +5,8 @@ import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.PropertiesCredentials
 import com.amazonaws.services.glacier.model.DeleteArchiveRequest
 import com.amazonaws.services.glacier.model.InitiateJobRequest
+import com.amazonaws.services.glacier.model.InitiateJobResult
+import com.amazonaws.services.glacier.model.JobParameters
 import com.amazonaws.services.glacier.transfer.UploadResult
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager
 import org.slf4j.*
@@ -40,8 +42,11 @@ client.setEndpoint(endpoint)
 ArchiveTransferManager atm = new ArchiveTransferManager(client, credentials)
 logger.info("deleting from vault=${credentials.AWSAccessKeyId}.${options.vault}")
 
-if (!options.dryrun) {
-    client.deleteArchive(new DeleteArchiveRequest()
-            .withVaultName(options.vault)
-            .withArchiveId(archiveId));
-}
+InitiateJobRequest initJobRequest = new InitiateJobRequest().
+        withVaultName(options.vault).
+        withJobParameters(new JobParameters().withType("inventory-retrieval"))
+;
+InitiateJobResult initJobResult = client.initiateJob(initJobRequest);
+String jobId = initJobResult.getJobId();
+logger.info("created job=${jobId} for vault=${options.vault}")
+
