@@ -53,7 +53,7 @@ if (1 == 2) { // TODO it right
     run {
         args '-d'
         args '--credentials=/Users/cbrown/dev/crevasse/AwsCredentials.properties'
-        args '--vault=???'
+        args '--vault=abc123'
         args '--dryrun'
         jvmArgs=["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"]
     }

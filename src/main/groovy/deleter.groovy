@@ -3,6 +3,7 @@ final endpoint = "https://glacier.us-east-1.amazonaws.com/"
 
 import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.PropertiesCredentials
+import com.amazonaws.services.glacier.model.DeleteArchiveRequest
 import com.amazonaws.services.glacier.model.InitiateJobRequest
 import com.amazonaws.services.glacier.transfer.UploadResult
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager
@@ -20,7 +21,7 @@ cli.with {
     h(longOpt: 'help', "this help")
     d(longOpt: 'debug', "enable debug logging")
     dryrun(longOpt: 'dryrun', "don't actually delete")
-    vault(longOpt: 'vault', "the vault to delete")
+    vault(longOpt: 'vault', "the vault to delete", args: 1, argName: 'vault')
     credentials(longOpt: 'credentials', args: 1, argName: 'credentials', "file containing AWS credentials", required: true)
 }
 def options = cli.parse(args)
@@ -40,14 +41,7 @@ ArchiveTransferManager atm = new ArchiveTransferManager(client, credentials)
 logger.info("deleting from vault=${credentials.AWSAccessKeyId}.${options.vault}")
 
 if (!options.dryrun) {
-    try {
-        UploadResult result = atm.upload(options.to, description.name, fileToUpload)
-    } catch (AmazonServiceException ase) {
-        if (ase.getStatusCode() == 408) {  // angry ISP?
-            logger.info("Sleeping, will retry")
-            sleep(1000 * 60 * 5);
-            UploadResult result = atm.upload(options.to, description.name, fileToUpload)
-        }
-    }
-    logger.info("Deleted archive=${result.getArchiveId()} in vault=${options.vault}")
+    client.deleteArchive(new DeleteArchiveRequest()
+            .withVaultName(options.vault)
+            .withArchiveId(archiveId));
 }
